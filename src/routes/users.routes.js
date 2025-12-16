@@ -1,6 +1,5 @@
 const express = require('express');
 const usersController = require('../controllers/users.controller');
-const integrationController = require('../controllers/users.controller');
 
 const router = express.Router();
 
@@ -8,7 +7,7 @@ const router = express.Router();
  * @openapi
  * tags:
  *   - name: Users
- *     description: Operações com usuários
+ *     description: Operacoes com usuarios
  * components:
  *   schemas:
  *     User:
@@ -33,6 +32,21 @@ const router = express.Router();
  *         celular:
  *           type: string
  *           example: "+55 11 99999-9999"
+ *     CreateUserInput:
+ *       type: object
+ *       required: [email, nome, sobrenome]
+ *       properties:
+ *         email:
+ *           type: string
+ *         nome:
+ *           type: string
+ *         sobrenome:
+ *           type: string
+ *         data_nascimento:
+ *           type: string
+ *           format: date
+ *         celular:
+ *           type: string
  */
 
 /**
@@ -40,10 +54,10 @@ const router = express.Router();
  * /api/users:
  *   get:
  *     tags: [Users]
- *     summary: Lista todos os usuários
+ *     summary: Lista todos os usuarios
  *     responses:
  *       200:
- *         description: Lista de usuários
+ *         description: Lista de usuarios
  *         content:
  *           application/json:
  *             schema:
@@ -53,25 +67,18 @@ const router = express.Router();
  *                   type: array
  *                   items:
  *                     $ref: '#/components/schemas/User'
- */
-router.get('/', usersController.list);
-
-/**
- * @openapi
- * /api/users/{id}:
- *   get:
+ *   post:
  *     tags: [Users]
- *     summary: Busca um usuário pelo id
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: integer
- *         description: ID do usuário
+ *     summary: Cria um usuario
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateUserInput'
  *     responses:
- *       200:
- *         description: Usuário encontrado
+ *       201:
+ *         description: Usuario criado
  *         content:
  *           application/json:
  *             schema:
@@ -80,9 +87,38 @@ router.get('/', usersController.list);
  *                 data:
  *                   $ref: '#/components/schemas/User'
  *       400:
- *         description: ID inválido
+ *         description: Payload invalido
+ */
+router.get('/', usersController.list);
+router.post('/', usersController.create);
+
+/**
+ * @openapi
+ * /api/users/{id}:
+ *   get:
+ *     tags: [Users]
+ *     summary: Busca um usuario pelo id
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID do usuario
+ *     responses:
+ *       200:
+ *         description: Usuario encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: ID invalido
  *       404:
- *         description: Usuário não encontrado
+ *         description: Usuario nao encontrado
  */
 router.get('/:id', usersController.getById);
 
@@ -91,25 +127,25 @@ router.get('/:id', usersController.getById);
  * /api/users/usuarios/integrar:
  *   post:
  *     tags: [Users]
- *     summary: Integra usuários do randomuser e insere no banco
- *     description: Chama https://randomuser.me/api, filtra por idade mínima e insere até o limite definido.
+ *     summary: Integra usuarios do randomuser e insere no banco
+ *     description: Chama https://randomuser.me/api, filtra por idade minima e insere ate o limite definido.
  *     parameters:
  *       - in: query
  *         name: idadeMin
  *         schema:
  *           type: integer
  *           minimum: 0
- *         description: Idade mínima dos usuários (default 0)
+ *         description: Idade minima dos usuarios (default 0)
  *       - in: query
  *         name: maxRegistros
  *         schema:
  *           type: integer
  *           minimum: 1
  *           maximum: 150
- *         description: Quantidade máxima a inserir (default 50, máx 150)
+ *         description: Quantidade maxima a inserir (default 50, max 150)
  *     responses:
  *       200:
- *         description: Integração executada
+ *         description: Integracao executada
  *         content:
  *           application/json:
  *             schema:
@@ -126,10 +162,10 @@ router.get('/:id', usersController.getById);
  *                 maxRegistros:
  *                   type: integer
  *       400:
- *         description: Parâmetros inválidos
+ *         description: Parametros invalidos
  *       500:
  *         description: Erro interno
  */
-router.post('/usuarios/integrar', integrationController.integrateRandomUsers);
+router.post('/usuarios/integrar', usersController.integrateRandomUsers);
 
 module.exports = router;
