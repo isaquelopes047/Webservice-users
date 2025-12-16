@@ -21,6 +21,7 @@ A API sobe em `http://localhost:3000` por padrão.
 - `GET /api/users` - lista usuários.
 - `GET /api/users/:id` - busca usuário por id.
 - `POST /api/users` - cria usuário (campos: `name`, `email`, opcional `role`).
+- `POST /api/users/usuarios` - integra do randomuser com filtros `idadeMin` e `maxRegistros`.
 - `GET /docs` - UI do Swagger.
 
 ## Estrutura de pastas
@@ -42,5 +43,5 @@ A API sobe em `http://localhost:3000` por padrão.
   - `DB_USER` (default `root`)
   - `DB_PASSWORD` (default `15c-eCde4hhD4h4FFCg41FHbBChh5b-E`)
   - `DB_NAME` (default `railway`)
-- Model usa a tabela `usuario` com colunas `id`, `name`, `email`, `role`.
+- Model usa a tabela `usuario` com colunas `id`, `email`, `nome`, `sobrenome`, `data_nascimento`, `celular`.
 -

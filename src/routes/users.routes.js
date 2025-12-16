@@ -1,5 +1,6 @@
 const express = require('express');
 const usersController = require('../controllers/users.controller');
+const integrationController = require('../controllers/users.controller');
 
 const router = express.Router();
 
@@ -16,30 +17,22 @@ const router = express.Router();
  *         id:
  *           type: integer
  *           example: 1
- *         name:
- *           type: string
- *           example: Ada Lovelace
  *         email:
  *           type: string
  *           example: ada@example.com
- *         role:
+ *         nome:
  *           type: string
- *           example: admin
- *     CreateUserInput:
- *       type: object
- *       required:
- *         - name
- *         - email
- *       properties:
- *         name:
+ *           example: Ada
+ *         sobrenome:
  *           type: string
- *           example: Ada Lovelace
- *         email:
+ *           example: Lovelace
+ *         data_nascimento:
  *           type: string
- *           example: ada@example.com
- *         role:
+ *           format: date
+ *           example: 1815-12-10
+ *         celular:
  *           type: string
- *           example: admin
+ *           example: "+55 11 99999-9999"
  */
 
 /**
@@ -92,5 +85,51 @@ router.get('/', usersController.list);
  *         description: Usuário não encontrado
  */
 router.get('/:id', usersController.getById);
+
+/**
+ * @openapi
+ * /api/users/usuarios/integrar:
+ *   post:
+ *     tags: [Users]
+ *     summary: Integra usuários do randomuser e insere no banco
+ *     description: Chama https://randomuser.me/api, filtra por idade mínima e insere até o limite definido.
+ *     parameters:
+ *       - in: query
+ *         name: idadeMin
+ *         schema:
+ *           type: integer
+ *           minimum: 0
+ *         description: Idade mínima dos usuários (default 0)
+ *       - in: query
+ *         name: maxRegistros
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 150
+ *         description: Quantidade máxima a inserir (default 50, máx 150)
+ *     responses:
+ *       200:
+ *         description: Integração executada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 inserted:
+ *                   type: integer
+ *                 totalFetched:
+ *                   type: integer
+ *                 idadeMin:
+ *                   type: integer
+ *                 maxRegistros:
+ *                   type: integer
+ *       400:
+ *         description: Parâmetros inválidos
+ *       500:
+ *         description: Erro interno
+ */
+router.post('/usuarios/integrar', integrationController.integrateRandomUsers);
 
 module.exports = router;

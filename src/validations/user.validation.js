@@ -37,7 +37,35 @@ function validateUserPayload(payload) {
   };
 }
 
+function validateIntegrateParams(query) {
+  const errors = [];
+  const idadeMinRaw = query.idade ?? query.idadeMin ?? query.age;
+  const maxRegistrosRaw = query.maxRegistros ?? query.max ?? query.limit;
+
+  const idadeMin = idadeMinRaw !== undefined ? Number.parseInt(idadeMinRaw, 10) : 0;
+  if (Number.isNaN(idadeMin) || idadeMin < 0) {
+    errors.push('idade deve ser um inteiro maior ou igual a 0');
+  }
+
+  const maxRegistros = maxRegistrosRaw !== undefined ? Number.parseInt(maxRegistrosRaw, 10) : 50;
+  if (Number.isNaN(maxRegistros) || maxRegistros <= 0) {
+    errors.push('maxRegistros deve ser um inteiro positivo');
+  } else if (maxRegistros > 150) {
+    errors.push('maxRegistros não pode ultrapassar 150');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    value: {
+      idadeMin: Number.isNaN(idadeMin) ? 0 : idadeMin,
+      maxRegistros: Number.isNaN(maxRegistros) ? 50 : Math.min(maxRegistros, 150),
+    },
+  };
+}
+
 module.exports = {
   validateId,
   validateUserPayload,
+  validateIntegrateParams,
 };

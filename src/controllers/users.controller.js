@@ -1,5 +1,6 @@
 const userService = require('../services/users.service');
 const { validateId, validateUserPayload } = require('../validations/user.validation');
+const { validateIntegrateParams } = require('../validations/user.validation');
 
 async function list(req, res) {
   try {
@@ -35,8 +36,30 @@ async function create(req, res) {
     .json({ message: 'Criação de usuário ainda não implementada. Apenas GET habilitado.' });
 }
 
+async function integrateRandomUsers(req, res) {
+  const { isValid, errors, value } = validateIntegrateParams(req.query);
+  if (!isValid) {
+    return res.status(400).json({ message: 'Parâmetros inválidos', errors });
+  }
+
+  try {
+    const result = await userService.integrateUsersFromRandom(value);
+    return res.json({
+      message: 'Integração concluída',
+      inserted: result.inserted,
+      totalFetched: result.totalFetched,
+      idadeMin: value.idadeMin,
+      maxRegistros: value.maxRegistros,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Erro ao integrar usuários', detail: error.message });
+  }
+}
+
 module.exports = {
   list,
   getById,
   create,
+  integrateRandomUsers
 };
