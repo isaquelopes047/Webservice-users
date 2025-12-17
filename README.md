@@ -22,6 +22,7 @@ A API sobe em `http://localhost:3000` por padrao.
 - `GET /api/users/:id` - busca usuario por id.
 - `POST /api/users` - cria usuario (campos: `email`, `nome`, `sobrenome`, opcionais `data_nascimento`, `celular`).
 - `POST /api/users/usuarios/integrar` - integra do randomuser com filtros `idadeMin` e `maxRegistros`.
+- `GET /api/relatorios/usuarios?dataInicio=YYYY-MM-DD&dataFim=YYYY-MM-DD` - baixa relatorio PDF filtrado por data de nascimento.
 - `GET /docs` - UI do Swagger.
 
 ## Estrutura de pastas

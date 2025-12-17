@@ -5,6 +5,10 @@ jest.mock('../src/services/users.service', () => ({
   integrateUsersFromRandom: jest.fn(),
 }));
 
+jest.mock('../src/services/reports.service', () => ({
+  generateUsersBirthReport: jest.fn(),
+}));
+
 const request = require('supertest');
 const app = require('../src/app');
 const userService = require('../src/services/users.service');

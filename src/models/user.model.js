@@ -42,11 +42,27 @@ async function findByEmail(connection, email) {
   return rows.length ? rows[0] : null;
 }
 
+// Atualiza um usuario existente pelo email
+async function updateByEmail(connection, email, user) {
+  const [result] = await connection.query(
+    `UPDATE ${TABELA}
+     SET nome = ?, sobrenome = ?, data_nascimento = ?, celular = ?
+     WHERE email = ?`,
+    [user.nome, user.sobrenome, user.data_nascimento, user.celular, email]
+  );
+  return result.affectedRows || 0;
+}
+
 // Insere varios usuarios em lote
 async function insertMany(connection, values) {
   if (!values.length) return 0;
   const [result] = await connection.query(
-    `INSERT INTO ${TABELA} (email, nome, sobrenome, data_nascimento, celular) VALUES ?`,
+    `INSERT INTO ${TABELA} (email, nome, sobrenome, data_nascimento, celular) VALUES ?
+     ON DUPLICATE KEY UPDATE
+       nome = VALUES(nome),
+       sobrenome = VALUES(sobrenome),
+       data_nascimento = VALUES(data_nascimento),
+       celular = VALUES(celular)`,
     [values]
   );
   return result.affectedRows || 0;
@@ -84,6 +100,7 @@ module.exports = {
   findAll,
   findById,
   findByEmail,
+  updateByEmail,
   insertMany,
   insertOne,
   mapRandomUserToInsertRow,

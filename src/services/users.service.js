@@ -1,6 +1,7 @@
 const pool = require('../config/db');
 const userModel = require('../models/user.model');
 const { ensureAdult } = require('../validations/age.validation');
+const { normalizeEmail, shouldUpdateExisting } = require('../validations/emailUpsert.validation');
 
 function buildError(status, message, errors) {
   const err = new Error(message);
@@ -25,7 +26,7 @@ function validateCreatePayload(payload) {
     throw buildError(400, 'payload deve ser um objeto');
   }
 
-  const email = typeof payload.email === 'string' ? payload.email.trim() : '';
+  const email = normalizeEmail(payload.email);
   const nome = typeof payload.nome === 'string' ? payload.nome.trim() : '';
   const sobrenome = typeof payload.sobrenome === 'string' ? payload.sobrenome.trim() : '';
   const dataNascimento =
@@ -111,12 +112,13 @@ async function createUser(payload) {
   }
 
   const existing = await userModel.findByEmail(pool, data.email);
-  if (existing) {
-    throw buildError(409, 'email ja cadastrado');
+  if (shouldUpdateExisting(existing)) {
+    await userModel.updateByEmail(pool, data.email, data);
+    return { id: existing.id, ...data, updated: true };
   }
 
   const insertId = await userModel.insertOne(pool, data);
-  return { id: insertId, ...data };
+  return { id: insertId, ...data, updated: false };
 }
 
 // Busca randomuser e insere respeitando filtros simples (idade minima e quantidade)
