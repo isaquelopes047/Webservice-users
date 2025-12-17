@@ -138,14 +138,72 @@ async function integrateUsersFromRandom(rawQuery) {
     .slice(0, params.maxRegistros);
 
   if (!filtered.length) {
-    return { inserted: 0, totalFetched: usersRaw.length, params };
+    return {
+      totalFetched: usersRaw.length,
+      params,
+      summary: { attempted: 0, inserted: 0, updated: 0, success: 0, errors: 0 },
+      rows: [],
+    };
   }
 
-  const values = filtered.map(userModel.mapRandomUserToInsertRow);
+  const rows = [];
+  let inserted = 0;
+  let updated = 0;
+  let errors = 0;
 
-  const inserted = await userModel.insertMany(pool, values);
+  for (const raw of filtered) {
+    const mapped = {
+      email: raw?.email,
+      nome: raw?.name?.first,
+      sobrenome: raw?.name?.last,
+      data_nascimento: raw?.dob?.date ? raw.dob.date.slice(0, 10) : '',
+      celular: raw?.cell || raw?.phone || '',
+    };
 
-  return { inserted, totalFetched: usersRaw.length, params };
+    try {
+      const data = validateCreatePayload(mapped);
+      ensureAdult(data.data_nascimento);
+
+      const existing = await userModel.findByEmail(pool, data.email);
+      if (shouldUpdateExisting(existing)) {
+        await userModel.updateByEmail(pool, data.email, data);
+        updated += 1;
+        rows.push({ ...data, id: existing.id, status: 'updated', erro: null });
+        continue;
+      }
+
+      const id = await userModel.insertOne(pool, data);
+      inserted += 1;
+      rows.push({ ...data, id, status: 'inserted', erro: null });
+    } catch (error) {
+      errors += 1;
+      const message = error && error.errors ? error.errors.join('; ') : error.message;
+      const shortMessage = (message || 'erro ao processar').slice(0, 140);
+      rows.push({
+        email: normalizeEmail(mapped.email),
+        nome: typeof mapped.nome === 'string' ? mapped.nome.trim() : '',
+        sobrenome: typeof mapped.sobrenome === 'string' ? mapped.sobrenome.trim() : '',
+        data_nascimento: mapped.data_nascimento || null,
+        celular: mapped.celular || null,
+        id: null,
+        status: 'error',
+        erro: shortMessage,
+      });
+    }
+  }
+
+  return {
+    totalFetched: usersRaw.length,
+    params,
+    summary: {
+      attempted: filtered.length,
+      inserted,
+      updated,
+      success: inserted + updated,
+      errors,
+    },
+    rows,
+  };
 }
 
 module.exports = {

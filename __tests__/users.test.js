@@ -7,6 +7,7 @@ jest.mock('../src/services/users.service', () => ({
 
 jest.mock('../src/services/reports.service', () => ({
   generateUsersBirthReport: jest.fn(),
+  generateUsersIntegrationReport: jest.fn(),
 }));
 
 const request = require('supertest');
@@ -50,5 +51,33 @@ describe('Users routes', () => {
     expect(res.status).toBe(400);
     expect(res.body.message).toBe('usuario deve ter mais de 18 anos');
     expect(userService.createUser).toHaveBeenCalledTimes(1);
+  });
+
+  it('POST /api/users/usuarios/integrar?download=true deve baixar PDF', async () => {
+    userService.integrateUsersFromRandom.mockResolvedValue({
+      totalFetched: 150,
+      params: { idadeMin: 18, maxRegistros: 2 },
+      summary: { attempted: 2, inserted: 1, updated: 1, success: 2, errors: 0 },
+      rows: [
+        { email: 'a@example.com', nome: 'A', sobrenome: 'B', data_nascimento: '1990-01-01', celular: null, status: 'inserted', erro: null },
+        { email: 'b@example.com', nome: 'C', sobrenome: 'D', data_nascimento: '1991-01-01', celular: null, status: 'updated', erro: null },
+      ],
+    });
+
+    const reportsService = require('../src/services/reports.service');
+    reportsService.generateUsersIntegrationReport.mockResolvedValue({
+      filename: 'relatorio-integracao.pdf',
+      stream: require('stream').Readable.from(Buffer.from('%PDF-1.4\nfake\n')),
+    });
+
+    const res = await request(app)
+      .post('/api/users/usuarios/integrar')
+      .query({ idadeMin: 18, maxRegistros: 2, download: true });
+
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toContain('application/pdf');
+    expect(res.headers['content-disposition']).toContain('attachment');
+    expect(userService.integrateUsersFromRandom).toHaveBeenCalledTimes(1);
+    expect(reportsService.generateUsersIntegrationReport).toHaveBeenCalledTimes(1);
   });
 });

@@ -143,9 +143,23 @@ router.get('/:id', usersController.getById);
  *           minimum: 1
  *           maximum: 150
  *         description: Quantidade maxima a inserir (default 50, max 150)
+ *       - in: query
+ *         name: download
+ *         schema:
+ *           type: boolean
+ *         description: Se true, retorna um PDF (attachment) com o relatorio da integracao
  *     responses:
  *       200:
- *         description: Integracao executada
+ *         description: Integracao executada (JSON ou PDF)
+ *         headers:
+ *           X-Integration-Params:
+ *             description: JSON com os parametros usados na integracao (quando download=true)
+ *             schema:
+ *               type: string
+ *           X-Integration-Summary:
+ *             description: JSON com o resumo (quando download=true)
+ *             schema:
+ *               type: string
  *         content:
  *           application/json:
  *             schema:
@@ -153,14 +167,39 @@ router.get('/:id', usersController.getById);
  *               properties:
  *                 message:
  *                   type: string
- *                 inserted:
- *                   type: integer
  *                 totalFetched:
  *                   type: integer
  *                 idadeMin:
  *                   type: integer
  *                 maxRegistros:
  *                   type: integer
+ *                 summary:
+ *                   type: object
+ *                   properties:
+ *                     attempted:
+ *                       type: integer
+ *                     inserted:
+ *                       type: integer
+ *                     updated:
+ *                       type: integer
+ *                     success:
+ *                       type: integer
+ *                     errors:
+ *                       type: integer
+ *                 request:
+ *                   type: object
+ *                   properties:
+ *                     query:
+ *                       type: object
+ *                       properties:
+ *                         idadeMin:
+ *                           type: integer
+ *                         maxRegistros:
+ *                           type: integer
+ *           application/pdf:
+ *             schema:
+ *               type: string
+ *               format: binary
  *       400:
  *         description: Parametros invalidos
  *       500:
