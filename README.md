@@ -13,6 +13,7 @@ npm install
 ## Execucao
 - Desenvolvimento: `npm run dev`
 - Producao/local: `npm start`
+- Testes: `npm test`
 
 A API sobe em `http://localhost:3000` por padrao.
 
@@ -21,7 +22,7 @@ A API sobe em `http://localhost:3000` por padrao.
 - `GET /api/users` - lista usuarios.
 - `GET /api/users/:id` - busca usuario por id.
 - `POST /api/users` - cria usuario (campos: `email`, `nome`, `sobrenome`, opcionais `data_nascimento`, `celular`).
-- `POST /api/users/usuarios/integrar` - integra do randomuser com filtros `idadeMin` e `maxRegistros`.
+- `POST /api/users/usuarios/integrar` - integra do randomuser com filtros `idadeMin` e `maxRegistros` (use `download=true` para baixar o PDF da integracao).
 - `GET /api/relatorios/usuarios?dataInicio=YYYY-MM-DD&dataFim=YYYY-MM-DD` - baixa relatorio PDF filtrado por data de nascimento.
 - `GET /docs` - UI do Swagger.
 
@@ -37,10 +38,11 @@ A API sobe em `http://localhost:3000` por padrao.
 
 ## Banco de dados
 - Conexao via pool em `src/config/db.js` (usado pelos services) com `mysql2/promise`.
-- Variaveis de ambiente (opcionais, ja ha defaults):
-  - `DB_HOST` (default `roundhouse.proxy.rlwy.net`)
-  - `DB_PORT` (default `51673`)
-  - `DB_USER` (default `root`)
-  - `DB_PASSWORD` (default `15c-eCde4hhD4h4FFCg41FHbBChh5b-E`)
-  - `DB_NAME` (default `railway`)
-- Model usa a tabela `usuario` com colunas `id`, `email`, `nome`, `sobrenome`, `data_nascimento`, `celular`.
+- Configure as variaveis no `.env` (recomendado):
+  - `DB_HOST`
+  - `DB_PORT`
+  - `DB_USER`
+  - `DB_PASSWORD`
+  - `DB_NAME`
+  - `DB_PING_ON_STARTUP` (opcional: defina `false` para nao pingar no start)
+- Model usa a tabela `usuario`.

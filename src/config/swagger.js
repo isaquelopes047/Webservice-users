@@ -12,7 +12,7 @@ const swaggerDefinition = {
     {
       url: 'https://webservice-users.up.railway.app',
       description: 'Servidor Railway',
-    }
+    },
   ],
 };
 

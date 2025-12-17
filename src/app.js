@@ -18,7 +18,7 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(swaggerSpec, {
     customCssUrl: '/public/swagger-custom.css',
-    customfavIcon: '/public/logo.svg',
+    customfavIcon: '/public/unnamed.png',
     customSiteTitle: 'Webservice API - Docs',
   })
 );
