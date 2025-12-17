@@ -27,4 +27,24 @@ describe('Users routes', () => {
     expect(res.body.data[0].email).toBe('a@example.com');
     expect(userService.listUsers).toHaveBeenCalledTimes(1);
   });
+
+  it('POST /api/users deve rejeitar idade menor ou igual a 18', async () => {
+    const err = new Error('usuario deve ter mais de 18 anos');
+    err.status = 400;
+    userService.createUser.mockRejectedValue(err);
+
+    const res = await request(app)
+      .post('/api/users')
+      .send({
+        email: 'young@example.com',
+        nome: 'Young',
+        sobrenome: 'Tester',
+        data_nascimento: '2010-01-01',
+        celular: '11999999999',
+      });
+
+    expect(res.status).toBe(400);
+    expect(res.body.message).toBe('usuario deve ter mais de 18 anos');
+    expect(userService.createUser).toHaveBeenCalledTimes(1);
+  });
 });

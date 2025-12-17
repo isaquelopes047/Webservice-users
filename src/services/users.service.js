@@ -1,5 +1,6 @@
 const pool = require('../config/db');
 const userModel = require('../models/user.model');
+const { ensureAdult } = require('../validations/age.validation');
 
 function buildError(status, message, errors) {
   const err = new Error(message);
@@ -20,29 +21,41 @@ function validateCreatePayload(payload) {
   const errors = [];
   const sanitized = {};
 
-  if (!payload || typeof payload !== 'object') throw buildError(400, 'payload deve ser um objeto');
-  
+  if (!payload || typeof payload !== 'object') {
+    throw buildError(400, 'payload deve ser um objeto');
+  }
+
   const email = typeof payload.email === 'string' ? payload.email.trim() : '';
-
   const nome = typeof payload.nome === 'string' ? payload.nome.trim() : '';
-
   const sobrenome = typeof payload.sobrenome === 'string' ? payload.sobrenome.trim() : '';
-
-  const dataNascimento = typeof payload.data_nascimento === 'string' ? payload.data_nascimento.trim() : '';
-
+  const dataNascimento =
+    typeof payload.data_nascimento === 'string' ? payload.data_nascimento.trim() : '';
   const celular = typeof payload.celular === 'string' ? payload.celular.trim() : '';
 
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    errors.push('email eh obrigatorio e deve ser valido');
+  }
+  if (!nome) {
+    errors.push('nome eh obrigatorio e deve ser string');
+  }
+  if (!sobrenome) {
+    errors.push('sobrenome eh obrigatorio e deve ser string');
+  }
+  if (dataNascimento && !/^\d{4}-\d{2}-\d{2}$/.test(dataNascimento)) {
+    errors.push('data_nascimento deve estar no formato YYYY-MM-DD');
+  }
+  if (!dataNascimento) {
+    errors.push('data_nascimento eh obrigatoria para validar idade');
+  }
 
-  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))  errors.push('E-mail é obrigatório e deve ser valido');
-  if (!nome) errors.push('Nome é obrigatório e deve ser string');
-  if (!sobrenome) errors.push('Sobrenome é obrigatório e deve ser string');
-  if (dataNascimento && !/^\d{4}-\d{2}-\d{2}$/.test(dataNascimento)) errors.push('data_nascimento deve estar no formato YYYY-MM-DD');
-  if (errors.length) throw buildError(400, 'Payload invalido', errors);
-  
+  if (errors.length) {
+    throw buildError(400, 'Payload invalido', errors);
+  }
+
   sanitized.email = email;
   sanitized.nome = nome;
   sanitized.sobrenome = sobrenome;
-  sanitized.data_nascimento = dataNascimento || null;
+  sanitized.data_nascimento = dataNascimento;
   sanitized.celular = celular || null;
 
   return sanitized;
@@ -90,6 +103,12 @@ async function getUserById(rawId) {
 
 async function createUser(payload) {
   const data = validateCreatePayload(payload);
+
+  try {
+    ensureAdult(data.data_nascimento);
+  } catch (error) {
+    throw buildError(400, error.message);
+  }
 
   const existing = await userModel.findByEmail(pool, data.email);
   if (existing) {

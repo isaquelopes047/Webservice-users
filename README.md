@@ -11,7 +11,7 @@ npm install
 ```
 
 ## Execucao
-- Desenvolvimento (com reload): `npm run dev`
+- Desenvolvimento: `npm run dev`
 - Producao/local: `npm start`
 
 A API sobe em `http://localhost:3000` por padrao.
