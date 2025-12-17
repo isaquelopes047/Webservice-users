@@ -65,6 +65,7 @@ function writeUsersReportPdf(doc, { dataInicio, dataFim, users }) {
     { header: 'Nome', width: 70, align: 'left', key: 'nome' },
     { header: 'Sobrenome', width: 80, align: 'left', key: 'sobrenome' },
     { header: 'Email', width: 150, align: 'left', key: 'email' },
+    { header: 'Sexo', width: 45, align: 'left', key: 'sexo' },
     { header: 'Nascimento', width: 70, align: 'left', key: 'data_nascimento' },
     { header: 'Celular', width: 90, align: 'left', key: 'celular' },
   ], contentWidth);
@@ -215,6 +216,7 @@ function writeUsersIntegrationReportPdf(doc, { params, summary, rows }) {
 
   const columns = fitColumnsToWidth([
     { header: 'Email', width: 220, align: 'left', key: 'email' },
+    { header: 'Sexo', width: 55, align: 'left', key: 'sexo' },
     { header: 'Nome', width: 95, align: 'left', key: 'nome' },
     { header: 'Sobrenome', width: 115, align: 'left', key: 'sobrenome' },
     { header: 'Nascimento', width: 90, align: 'left', key: 'data_nascimento' },

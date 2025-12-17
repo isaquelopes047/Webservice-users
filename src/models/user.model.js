@@ -4,6 +4,7 @@ function mapUser(row) {
   return {
     id: row.id,
     email: row.email,
+    sexo: row.sexo,
     nome: row.nome,
     sobrenome: row.sobrenome,
     data_nascimento: row.data_nascimento,
@@ -19,7 +20,7 @@ function mapUsers(rows) {
 // Busca todos os usuarios na tabela
 async function findAll(connection) {
   const [rows] = await connection.query(
-    `SELECT id, email, nome, sobrenome, data_nascimento, celular FROM ${TABELA}`
+    `SELECT id, email, sexo, nome, sobrenome, data_nascimento, celular FROM ${TABELA}`
   );
   return mapUsers(rows);
 }
@@ -27,7 +28,7 @@ async function findAll(connection) {
 // Busca um usuario pelo id
 async function findById(connection, id) {
   const [rows] = await connection.query(
-    `SELECT id, email, nome, sobrenome, data_nascimento, celular FROM ${TABELA} WHERE id = ?`,
+    `SELECT id, email, sexo, nome, sobrenome, data_nascimento, celular FROM ${TABELA} WHERE id = ?`,
     [id]
   );
   return rows.length ? mapUser(rows[0]) : null;
@@ -46,9 +47,9 @@ async function findByEmail(connection, email) {
 async function updateByEmail(connection, email, user) {
   const [result] = await connection.query(
     `UPDATE ${TABELA}
-     SET nome = ?, sobrenome = ?, data_nascimento = ?, celular = ?
+     SET sexo = ?, nome = ?, sobrenome = ?, data_nascimento = ?, celular = ?
      WHERE email = ?`,
-    [user.nome, user.sobrenome, user.data_nascimento, user.celular, email]
+    [user.sexo, user.nome, user.sobrenome, user.data_nascimento, user.celular, email]
   );
   return result.affectedRows || 0;
 }
@@ -57,8 +58,9 @@ async function updateByEmail(connection, email, user) {
 async function insertMany(connection, values) {
   if (!values.length) return 0;
   const [result] = await connection.query(
-    `INSERT INTO ${TABELA} (email, nome, sobrenome, data_nascimento, celular) VALUES ?
+    `INSERT INTO ${TABELA} (email, sexo, nome, sobrenome, data_nascimento, celular) VALUES ?
      ON DUPLICATE KEY UPDATE
+       sexo = VALUES(sexo),
        nome = VALUES(nome),
        sobrenome = VALUES(sobrenome),
        data_nascimento = VALUES(data_nascimento),
@@ -71,9 +73,10 @@ async function insertMany(connection, values) {
 // Insere um unico usuario e retorna o id
 async function insertOne(connection, user) {
   const [result] = await connection.query(
-    `INSERT INTO ${TABELA} (email, nome, sobrenome, data_nascimento, celular) VALUES (?, ?, ?, ?, ?)`,
+    `INSERT INTO ${TABELA} (email, sexo, nome, sobrenome, data_nascimento, celular) VALUES (?, ?, ?, ?, ?, ?)`,
     [
       user.email,
+      user.sexo,
       user.nome,
       user.sobrenome,
       user.data_nascimento,
@@ -85,13 +88,14 @@ async function insertOne(connection, user) {
 
 // Mapeia dados do randomuser para a ordem de colunas de insert
 function mapRandomUserToInsertRow(randomUser) {
+  const gender = randomUser?.gender || null;
   const first = randomUser?.name?.first || '';
   const last = randomUser?.name?.last || '';
   const email = randomUser?.email || '';
   const birthDate = randomUser?.dob?.date ? randomUser.dob.date.slice(0, 10) : null;
   const cell = randomUser?.cell || randomUser?.phone || '';
 
-  return [email, first, last, birthDate, cell];
+  return [email, gender, first, last, birthDate, cell];
 }
 
 module.exports = {

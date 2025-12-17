@@ -24,6 +24,7 @@ function validateCreatePayload(payload) {
   if (!payload || typeof payload !== 'object') throw buildError(400, 'payload deve ser um objeto');
   
   const email = normalizeEmail(payload.email);
+  const sexo = typeof payload.sexo === 'string' ? payload.sexo.trim().toLowerCase() : '';
   const nome = typeof payload.nome === 'string' ? payload.nome.trim() : '';
   const sobrenome = typeof payload.sobrenome === 'string' ? payload.sobrenome.trim() : '';
   const dataNascimento = typeof payload.data_nascimento === 'string' ? payload.data_nascimento.trim() : '';
@@ -35,6 +36,8 @@ function validateCreatePayload(payload) {
 
   if (!sobrenome)  errors.push('sobrenome eh obrigatorio e deve ser string');
 
+  if (sexo && !['male', 'female', 'm', 'f'].includes(sexo)) errors.push('sexo deve ser male/female (ou m/f)');
+
   if (dataNascimento && !/^\d{4}-\d{2}-\d{2}$/.test(dataNascimento)) errors.push('data_nascimento deve estar no formato YYYY-MM-DD');
   
   if (!dataNascimento) errors.push('data_nascimento eh obrigatoria para validar idade');
@@ -42,6 +45,7 @@ function validateCreatePayload(payload) {
   if (errors.length) throw buildError(400, 'Payload invalido', errors);
   
   sanitized.email = email;
+  sanitized.sexo = sexo ? (sexo === 'm' ? 'male' : sexo === 'f' ? 'female' : sexo) : null;
   sanitized.nome = nome;
   sanitized.sobrenome = sobrenome;
   sanitized.data_nascimento = dataNascimento;
@@ -138,6 +142,7 @@ async function integrateUsersFromRandom(rawQuery) {
   for (const raw of filtered) {
     const mapped = {
       email: raw?.email,
+      sexo: raw?.gender,
       nome: raw?.name?.first,
       sobrenome: raw?.name?.last,
       data_nascimento: raw?.dob?.date ? raw.dob.date.slice(0, 10) : '',
@@ -165,6 +170,7 @@ async function integrateUsersFromRandom(rawQuery) {
       const shortMessage = (message || 'erro ao processar').slice(0, 140);
       rows.push({
         email: normalizeEmail(mapped.email),
+        sexo: typeof mapped.sexo === 'string' ? mapped.sexo.trim().toLowerCase() : null,
         nome: typeof mapped.nome === 'string' ? mapped.nome.trim() : '',
         sobrenome: typeof mapped.sobrenome === 'string' ? mapped.sobrenome.trim() : '',
         data_nascimento: mapped.data_nascimento || null,

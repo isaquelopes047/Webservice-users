@@ -5,6 +5,7 @@ function mapUser(row) {
   return {
     id: row.id,
     email: row.email,
+    sexo: row.sexo,
     nome: row.nome,
     sobrenome: row.sobrenome,
     data_nascimento: row.data_nascimento,
@@ -16,7 +17,7 @@ function mapUser(row) {
 async function listByBirthDateRange(connection, { dataInicio, dataFim }) {
   const [rows] = await connection.query(
     `
-      SELECT id, email, nome, sobrenome, data_nascimento, celular
+      SELECT id, email, sexo, nome, sobrenome, data_nascimento, celular
       FROM ${TABELA}
       WHERE data_nascimento IS NOT NULL
         AND data_nascimento BETWEEN ? AND ?

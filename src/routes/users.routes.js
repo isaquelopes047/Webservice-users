@@ -19,6 +19,9 @@ const router = express.Router();
  *         email:
  *           type: string
  *           example: ada@example.com
+ *         sexo:
+ *           type: string
+ *           example: female
  *         nome:
  *           type: string
  *           example: Ada
@@ -37,6 +40,8 @@ const router = express.Router();
  *       required: [email, nome, sobrenome]
  *       properties:
  *         email:
+ *           type: string
+ *         sexo:
  *           type: string
  *         nome:
  *           type: string
