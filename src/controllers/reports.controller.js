@@ -1,9 +1,7 @@
 const reportsService = require('../services/reports.service');
 
 function handleError(res, error) {
-  if (error && error.status) {
-    return res.status(error.status).json({ message: error.message, errors: error.errors });
-  }
+  if (error && error.status) return res.status(error.status).json({ message: error.message, errors: error.errors });
   console.error(error);
   return res.status(500).json({ message: 'Erro interno' });
 }

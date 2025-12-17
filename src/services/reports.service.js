@@ -100,7 +100,7 @@ function writeUsersReportPdf(doc, { dataInicio, dataFim, users }) {
     return `${str.slice(0, low)}${suffix}`;
   };
 
-  const formatDateTimeBr = (date) => {
+  const formatarDataTimeBr = (date) => {
     const pad2 = (n) => String(n).padStart(2, '0');
     const d = pad2(date.getDate());
     const m = pad2(date.getMonth() + 1);
@@ -165,7 +165,7 @@ function writeUsersReportPdf(doc, { dataInicio, dataFim, users }) {
   doc.moveDown(0.4);
   doc.text(`Total: ${users.length}`);
   doc.moveDown(0.4);
-  doc.text(`Gerado em: ${formatDateTimeBr(new Date())}`);
+  doc.text(`Gerado em: ${formatarDataTimeBr(new Date())}`);
   doc.moveDown(1.2);
 
   if (!users.length) {
@@ -233,24 +233,29 @@ function writeUsersIntegrationReportPdf(doc, { params, summary, rows }) {
 
   const clipText = (text, width) => {
     const str = String(text ?? '');
+
     if (!str) return '-';
     if (doc.widthOfString(str) <= width) return str;
+
     const suffix = '...';
     const target = Math.max(0, width - doc.widthOfString(suffix));
+
     let low = 0;
     let high = str.length;
 
     while (low < high) {
       const mid = Math.ceil((low + high) / 2);
       const candidate = str.slice(0, mid);
+
       if (doc.widthOfString(candidate) <= target) low = mid;
+      
       else high = mid - 1;
     }
 
     return `${str.slice(0, low)}${suffix}`;
   };
 
-  const formatDateTimeBr = (date) => {
+  const formatarDataTimeBr = (date) => {
     const pad2 = (n) => String(n).padStart(2, '0');
     const d = pad2(date.getDate());
     const m = pad2(date.getMonth() + 1);
@@ -322,7 +327,7 @@ function writeUsersIntegrationReportPdf(doc, { params, summary, rows }) {
     `Tentados: ${summary.attempted} | Sucesso: ${summary.success} | Erros: ${summary.errors} | Inseridos: ${summary.inserted} | Atualizados: ${summary.updated}`
   );
   doc.moveDown(0.4);
-  doc.text(`Gerado em: ${formatDateTimeBr(new Date())}`);
+  doc.text(`Gerado em: ${formatarDataTimeBr(new Date())}`);
   doc.moveDown(1.2);
 
   let y = Math.max(doc.y, marginTop + 90);

@@ -44,5 +44,4 @@ A API sobe em `http://localhost:3000` por padrao.
   - `DB_USER`
   - `DB_PASSWORD`
   - `DB_NAME`
-  - `DB_PING_ON_STARTUP` (opcional: defina `false` para nao pingar no start)
 - Model usa a tabela `usuario`.

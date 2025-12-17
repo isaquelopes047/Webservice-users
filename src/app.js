@@ -24,9 +24,8 @@ app.use(
 );
 app.use('/api', routes);
 
-// Fallback for unmatched routes
 app.use((req, res) => {
-  res.status(404).json({ message: 'Resource not found' });
+  res.status(404).json({ message: 'Não encontrado' });
 });
 
 module.exports = app;
