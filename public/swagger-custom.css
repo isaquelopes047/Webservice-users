@@ -1,0 +1,24 @@
+/* Customize Swagger UI topbar logo; update the URL below to your company logo */
+.swagger-ui .topbar {
+  background-color: #1d2946 !important;
+  border-bottom: 2px solid #38bdf8;
+}
+
+/* Hide default Swagger logo (img) */
+.swagger-ui .topbar .topbar-wrapper img {
+  display: none;
+}
+
+/* Add custom logo via pseudo element (more reliable than `content: url()` on <img>) */
+.swagger-ui .topbar .topbar-wrapper::before {
+  content: "";
+  display: block;
+  width: 180px;
+  height: 40px;
+  background: url("/public/unnamed.png") no-repeat left center / contain;
+  margin-right: 12px;
+}
+
+.swagger-ui .topbar a {
+  max-width: none;
+}
