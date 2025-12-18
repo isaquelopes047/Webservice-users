@@ -59,8 +59,8 @@ describe('Users routes', () => {
       params: { idadeMin: 18, maxRegistros: 2 },
       summary: { attempted: 2, inserted: 1, updated: 1, success: 2, errors: 0 },
       rows: [
-        { email: 'a@example.com', nome: 'A', sobrenome: 'B', data_nascimento: '1990-01-01', celular: null, status: 'inserted', erro: null },
-        { email: 'b@example.com', nome: 'C', sobrenome: 'D', data_nascimento: '1991-01-01', celular: null, status: 'updated', erro: null },
+        { email: 'a@example.com', sexo: 'female', nome: 'A', sobrenome: 'B', data_nascimento: '1990-01-01', celular: null, status: 'inserted', erro: null },
+        { email: 'b@example.com', sexo: 'male', nome: 'C', sobrenome: 'D', data_nascimento: '1991-01-01', celular: null, status: 'updated', erro: null },
       ],
     });
 
