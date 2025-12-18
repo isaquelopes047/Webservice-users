@@ -1,9 +1,9 @@
 function ensureAdult(dateStr) {
-  if (!dateStr) throw new Error('data_nascimento eh obrigatoria para validar idade');
+  if (!dateStr) throw new Error('Data de nascimento é obrigatória para validar idade');
 
   const dob = new Date(dateStr);
 
-  if (Number.isNaN(dob.getTime())) throw new Error('data_nascimento invalida');
+  if (Number.isNaN(dob.getTime())) throw new Error('Data de nascimento inválida');
 
   const today = new Date();
 
